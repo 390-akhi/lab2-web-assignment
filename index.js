@@ -1,22 +1,35 @@
 const express = require('express');
-const taskRouter = require('./routes/tasks');
+const taskRouter = require('./src/routes/tasks');
 
 const app = express();
 
-// In-memory storage
+// Middleware to parse JSON
+app.use(express.json());
+
+// In-memory task list
 const tasks = [
-  { id: 1, title: 'Sample Task', completed: false }
+  { id: 1, title: "Learn Express", completed: false, priority: "high", createdAt: new Date() },
+  { id: 2, title: "Practice Node.js", completed: true, priority: "medium", createdAt: new Date() },
+  { id: 3, title: "Build REST API", completed: false, priority: "high", createdAt: new Date() },
+  { id: 4, title: "Read Documentation", completed: false, priority: "low", createdAt: new Date() },
+  { id: 5, title: "Test API using Postman", completed: true, priority: "medium", createdAt: new Date() }
 ];
 
 app.locals.tasks = tasks;
 
-// Middleware
-app.use(express.json()); 
+/* ------------------------
+   HEALTH CHECK ROUTE
+------------------------- */
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    uptime: process.uptime()
+  });
+});
 
-// Mount routes
-app.use('/tasks', taskRouter);
+// Mounting task routes
+app.use('/', taskRouter);
 
-// Start server
 app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+  console.log("Server running on http://localhost:3000");
 });
